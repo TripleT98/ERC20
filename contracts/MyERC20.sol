@@ -1,12 +1,14 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract MyERC20{
+import "./Ownable.sol";
 
-  string name = "MyERC20";
-  string symbol = "MRC";
-  uint decimals = 18;
-  uint totalSuply;
+contract MyERC20 is Ownable{
+
+  string public name = "MyERC20";
+  string public symbol = "MRC";
+  uint public decimals = 18;
+  uint public totalSuply;
 
   mapping (address => uint) private _balances;
   mapping (address => mapping(address => uint)) private _allowances;
@@ -19,7 +21,7 @@ contract MyERC20{
     _;
   }
 
-  function mint(address _to, uint _value) public Overflow256(totalSuply + _value, totalSuply) Overflow256(_balances[_to] + _value, _balances[_to]){
+  function mint(address _to, uint _value) public Overflow256(totalSuply + _value, totalSuply) Overflow256(_balances[_to] + _value, _balances[_to]) onlyOwner {
     totalSuply += _value;
     _balances[_to] += _value;
   }
