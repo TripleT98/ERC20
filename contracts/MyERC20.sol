@@ -16,27 +16,35 @@ contract MyERC20 is Ownable{
   event Transfer(address indexed _from, address indexed _to, uint _value);
   event Approval(address indexed _owner, address indexed _spender, uint _value);
 
-  modifier Overflow256(uint _value1, uint _value2){
-    require(_value1 > _value2);
-    _;
-  }
 
-  function mint(address _to, uint _value) public Overflow256(totalSuply + _value, totalSuply) Overflow256(_balances[_to] + _value, _balances[_to]) onlyOwner {
-    totalSuply += _value;
-    _balances[_to] += _value;
-  }
+  function mint(address _to, uint _value)
+    public
+    onlyOwner
+    {
+      totalSuply += _value;
+      _balances[_to] += _value;
+      emit Transfer(address(0), _to, _value);
+    }
 
-  function burn(address _owner, uint _value) public {
-    totalSuply -= _value;
-    _balances[_owner] -= _value;
-  }
+  function burn(address _from, uint _value)
+    public
+    {
+      require(msg.sender == _from || msg.sender == owner, "You cant burn tokens from this address!");
+      require(_balances[_from] >= _value, "You haven't such a big amount of tokens to burn!");
+      totalSuply -= _value;
+      _balances[_from] -= _value;
+      emit Transfer(_from, address(0), _value);
+    }
 
   function balanceOf(address _owner) public view returns(uint){
     uint balance = _balances[_owner];
     return balance;
   }
 
-  function transfer(address _to, uint _value) external returns(bool){
+  function transfer(address _to, uint _value)
+   external
+   returns(bool)
+   {
     require(_balances[msg.sender] >= _value, "You have not enough MyERC20 tokens to transfer!");
     _balances[msg.sender] -= _value;
     _balances[_to] += _value;
@@ -44,8 +52,12 @@ contract MyERC20 is Ownable{
     return true;
   }
 
- function transferFrom(address _from, address _to, uint _value) public returns(bool){
-    require(_allowances[_from][_to] >= _value && _balances[_from] >= _value, "You have not allowances to withdraw this amount of tokens!");
+ function transferFrom(address _from, address _to, uint _value)
+  public
+  returns(bool)
+  {
+    require(_allowances[_from][_to] >= _value, "You have not allowances to withdraw this amount of tokens!");
+    require(_balances[_from] >= _value, "Address you want to withdraw from has not enough tokens!");
     _allowances[_from][_to] -= _value;
     _balances[_from] -= _value;
     _balances[_to] += _value;
@@ -60,9 +72,24 @@ contract MyERC20 is Ownable{
     return true;
   }
 
- function allowance(address _owner, address _to) public view returns(uint){
-   uint remaining = _allowances[_owner][_to];
+ function allowance(address _owner, address _spender) public view returns(uint){
+   uint remaining = _allowances[_owner][_spender];
    return remaining;
  }
 
+ function increaseAllowance(address _spender, uint _value)
+    public
+ {
+    require(_balances[msg.sender] >= _value + _allowances[msg.sender][_spender], "Not enough tokens to allow!");
+    _allowances[msg.sender][_spender] += _value;
+    emit Approval(msg.sender, _spender, allowance(msg.sender, _spender));
+ }
+
+ function decreaseAllowance(address _spender, uint _value)
+    public
+ {
+    require(_allowances[msg.sender][_spender] >= _value, "Allowance is less than zero!");
+    _allowances[msg.sender][_spender] -= _value;
+    emit Approval(msg.sender, _spender, allowance(msg.sender, _spender));
+ }
 }

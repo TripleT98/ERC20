@@ -5,7 +5,7 @@
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
 
-async function main() {
+async function main():Promise<any> {
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
   //
