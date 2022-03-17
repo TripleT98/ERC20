@@ -4,11 +4,10 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
-import 
 
-async function main():Promise<any> {
+async function main():Promise<void> {
   // We get the contract to deploy
-  const MyERC20:  = await ethers.getContractFactory("MyERC20");
+  const MyERC20  = await ethers.getContractFactory("MyERC20");
   const myERC20 = await MyERC20.deploy();
 
   await myERC20.deployed();

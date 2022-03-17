@@ -7,13 +7,9 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 
-require ("./tasks/tasks1.ts");
+require ("./tasks/tasksRoot.ts");
 
 dotenv.config();
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
@@ -23,6 +19,11 @@ const config: HardhatUserConfig = {
        accounts:[`${process.env.PRIVATE_KEY}`]
      }
   },
+  etherscan:{
+    apiKey:{
+      rinkeby: process.env.ETHERSCAN_API_KEY,
+    }
+  }
 };
 
 export default config;
